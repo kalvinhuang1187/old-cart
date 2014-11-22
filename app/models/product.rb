@@ -1,5 +1,8 @@
 class Product < ActiveRecord::Base
   default_scope :order => 'title'
+  has_many :line_items
+  
+  before_destroy :ensure_not_referenced_by_any_line_item
   
   # VALIDATIONS:
   validates :title, :description, :image_url, :presence => true
@@ -12,5 +15,17 @@ class Product < ActiveRecord::Base
   validates :title, :uniqueness => true, :length => {
     :minimum => 10,
     :message => 'must be at least ten characters long.'
-}
+  }
+    
+  private
+  # ensure that there are no line items referencing this product  
+    def ensure_not_referenced_by_any_line_item
+      if line_items.count.zero?
+        return true
+      else
+        error[:base] << "Line Items present"
+        return false
+      end
+    end
+
 end
