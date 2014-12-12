@@ -15,7 +15,9 @@
   <div id="columns">
     <div id="side">
   	  <div id="cart">
-        <%= render @cart %>
+  	  	<% unless @cart.blank? %>
+          <%= render @cart %>
+        <% end %>
 	  </div>
 	  
       <a href="http://www....">Home</a><br />
