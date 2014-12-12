@@ -5,6 +5,11 @@ class CartsController < ApplicationController
   # GET /carts.json
   def index
     @carts = Cart.all
+    
+    respond_to do |format|
+      format.html # index.html.erb
+      format.xml  { render :xml => @carts }
+    end
   end
 
   # GET /carts/1
@@ -26,10 +31,16 @@ class CartsController < ApplicationController
   # GET /carts/new
   def new
     @cart = Cart.new
+    
+    respond_to do |format|
+      format.html # index.html.erb
+      format.xml  { render :xml => @cart }
+    end
   end
 
   # GET /carts/1/edit
   def edit
+    @cart = Cart.find(params[:id])
   end
 
   # POST /carts
@@ -40,10 +51,12 @@ class CartsController < ApplicationController
     respond_to do |format|
       if @cart.save
         format.html { redirect_to @cart, notice: 'Cart was successfully created.' }
-        format.json { render action: 'show', status: :created, location: @cart }
+        #format.json { render action: 'show', status: :created, location: @cart }
+        format.xml  { render :xml => @cart, :status => :created, :location => @cart }
       else
         format.html { render action: 'new' }
-        format.json { render json: @cart.errors, status: :unprocessable_entity }
+        #format.json { render json: @cart.errors, status: :unprocessable_entity }
+        format.xml  { render :xml => @cart.errors, :status => :unprocessable_entity }
       end
     end
   end
@@ -51,13 +64,16 @@ class CartsController < ApplicationController
   # PATCH/PUT /carts/1
   # PATCH/PUT /carts/1.json
   def update
+    @cart = Cart.find(params[:id])
     respond_to do |format|
       if @cart.update(cart_params)
         format.html { redirect_to @cart, notice: 'Cart was successfully updated.' }
-        format.json { head :no_content }
+        format.xml  { head :ok }
+        #format.json { head :no_content }
       else
         format.html { render action: 'edit' }
-        format.json { render json: @cart.errors, status: :unprocessable_entity }
+        format.xml  { render :xml => @cart.errors, :status => :unprocessable_entity }
+        #format.json { render json: @cart.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -65,10 +81,15 @@ class CartsController < ApplicationController
   # DELETE /carts/1
   # DELETE /carts/1.json
   def destroy
+    @cart = current_cart
+    #@cart = Cart.find(params[:id]) @cart.destroy
     @cart.destroy
+    session[:cart_id] = nil
+    
     respond_to do |format|
-      format.html { redirect_to carts_url }
-      format.json { head :no_content }
+      format.html { redirect_to(store_url,
+        :notice => 'Your cart is currently empty') }
+      format.xml  { head :ok }
     end
   end
 
